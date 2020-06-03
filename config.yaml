@@ -10,13 +10,13 @@
 
 - type: trigger
   name: bitstream01
-  subscriber: fpgacommand
+  subscriber: subscriber
   triggerword: "bitstream01"
   actions: bitstream01
 
 - type: trigger
-  name: bitstream01
-  subscriber: fpgacommand
+  name: bitstream02
+  subscriber: subscriber
   triggerword: "bitstream02"
   actions: bitstream02
 
@@ -31,3 +31,15 @@
   shell:
     - cmd: "fpgautil"
       arg: "-b /run/media/mcblk0p1/zcu104-standalone02.bit"
+
+- type: action
+  name: show
+  shell:
+    - cmd: "ls"
+      arg: "-l"
+
+- type: trigger
+  name: showlist
+  subscriber: subscriber
+  triggerword: "show"
+  actions: show
