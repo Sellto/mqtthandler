@@ -1,0 +1,33 @@
+- type: broker
+  name: cloud-broker
+  host: kubernetes-sandbox.com
+  port: 1883
+
+- type: mqtt-subscriber
+  name: subscriber
+  broker: cloud-broker
+  topic: fpgacommand
+
+- type: trigger
+  name: bitstream01
+  subscriber: fpgacommand
+  triggerword: "bitstream01"
+  actions: bitstream01
+
+- type: trigger
+  name: bitstream01
+  subscriber: fpgacommand
+  triggerword: "bitstream02"
+  actions: bitstream02
+
+- type: action
+  name: bitstream01
+  shell:
+    - cmd: "fpgautil"
+      arg: "-b /run/media/mcblk0p1/zcu104-standalone01.bit"
+
+- type: action
+  name: bitstream02
+  shell:
+    - cmd: "fpgautil"
+      arg: "-b /run/media/mcblk0p1/zcu104-standalone02.bit"
