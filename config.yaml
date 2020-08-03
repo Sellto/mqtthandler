@@ -1,45 +1,6 @@
-- type: broker
-  name: cloud-broker
-  host: kubernetes-sandbox.com
+model: pynq-z2-board
+launcher: python3
+broker:
+  host: localhost
   port: 1883
-
-- type: mqtt-subscriber
-  name: subscriber
-  broker: cloud-broker
   topic: fpgacommand
-
-- type: trigger
-  name: bitstream01
-  subscriber: subscriber
-  triggerword: "bitstream01"
-  actions: bitstream01
-
-- type: trigger
-  name: bitstream02
-  subscriber: subscriber
-  triggerword: "bitstream02"
-  actions: bitstream02
-
-- type: action
-  name: bitstream01
-  shell:
-    - cmd: "fpgautil"
-      arg: "-b /run/media/mcblk0p1/zcu104-standalone01.bit"
-
-- type: action
-  name: bitstream02
-  shell:
-    - cmd: "fpgautil"
-      arg: "-b /run/media/mcblk0p1/zcu104-standalone02.bit"
-
-- type: action
-  name: show
-  shell:
-    - cmd: "ls"
-      arg: "-l"
-
-- type: trigger
-  name: showlist
-  subscriber: subscriber
-  triggerword: "show"
-  actions: show
