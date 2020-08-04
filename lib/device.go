@@ -35,7 +35,7 @@ func (d *Device) GetConfigFromFile(filename string){
 
 func (d *Device) Listen() {
 	c := make(chan os.Signal)
-  d.MQTT.Action = d.todo
+  d.MQTT.Action = d.action
   d.MQTT.Connect()
   //Signal that trig a Keyboard Interrupt
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
@@ -54,7 +54,7 @@ func (d *Device) Listen() {
 }
 
 
-func (d *Device) todo(m Message, client mqtt.Client) {
+func (d *Device) action(m Message, client mqtt.Client) {
   switch m.Action {
     case "Ping":
   		d.pong(m,client)
