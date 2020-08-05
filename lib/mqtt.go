@@ -14,7 +14,7 @@ type MQTT struct {
   Topic string `yaml:"topic"`
   Client mqtt.Client
   ID string
-  Action func(Message,mqtt.Client)
+  Action func(Message,mqtt.Client,string)
 }
 
 
@@ -25,21 +25,25 @@ func (b *MQTT) Connect() {
     b.ID = nameGenerator.Generate()
   }
   //Create the MQTT client
-  opts := mqtt.NewClientOptions().AddBroker(b.BrokerHost+":"+b.BrokerPort).SetClientID(b.ID)
+  opts := mqtt.NewClientOptions().AddBroker(b.BrokerHost+":"+b.BrokerPort).SetClientID("b.ID")
   b.Client = mqtt.NewClient(opts)
   // Connection to the MQTT Broker
   if token := b.Client.Connect(); token.Wait() && token.Error() != nil {
      log.Fatal(token.Error())
   }
-  // Subscribe to the specified Topic
-  if token := b.Client.Subscribe(b.Topic, 0, b.MqttHandlerJSON()); token.Wait() && token.Error() != nil {
+  // Subscribe to the global Topic
+  if token := b.Client.Subscribe(b.Topic, 0, b.MqttHandlerJSON(b.Topic)); token.Wait() && token.Error() != nil {
+     log.Fatal(token.Error())
+  }
+  // Subscribe to the global Topic
+  if token := b.Client.Subscribe(b.ID+"-incoming", 0, b.MqttHandlerJSON(b.ID+"-incoming")); token.Wait() && token.Error() != nil {
      log.Fatal(token.Error())
   }
 }
 
 
 // Action made when the device receive a message from the specified Topic
-func (b *MQTT) MqttHandlerJSON() func(client mqtt.Client, message mqtt.Message) {
+func (b *MQTT) MqttHandlerJSON(channel string) func(client mqtt.Client, message mqtt.Message) {
   var msgRcvd mqtt.MessageHandler = func(client mqtt.Client, message mqtt.Message) {
     log.Println("Receive Message")
     var msg Message
@@ -49,7 +53,7 @@ func (b *MQTT) MqttHandlerJSON() func(client mqtt.Client, message mqtt.Message) 
       log.Println("Bad Format message")
     }
     // Action to do when a message is correctly parsed
-    b.Action(msg,client)
+    b.Action(msg,client,channel)
     }
   return msgRcvd
 }

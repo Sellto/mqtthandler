@@ -4,11 +4,10 @@ package lib
 // Struct that be used to parse the Message
 type Message struct {
   Action string
-  Payload string
+  Payload interface{}
 }
 
-// Accepted message
-// {
-//   "action":"a specific action",
-//   "payload:"some text"
-// }
+type RunPayload struct {
+  Launcher string
+  Args []string
+}

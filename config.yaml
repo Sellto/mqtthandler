@@ -1,6 +1,11 @@
-model: pynq-z2-board
-launcher: python3
+type: CPU
+model: MacBook-Pro
+launchers:
+  - python3
+  - go
 broker:
   host: localhost
   port: 1883
   topic: fpgacommand
+sourcepath:
+  "/Users/tse/data/mqtthandler/"
