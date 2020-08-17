@@ -25,32 +25,31 @@ func (b *MQTT) Connect() {
     b.ID = nameGenerator.Generate()
   }
   //Create the MQTT client
-  opts := mqtt.NewClientOptions().AddBroker(b.BrokerHost+":"+b.BrokerPort).SetClientID("b.ID")
+  opts := mqtt.NewClientOptions().AddBroker(b.BrokerHost+":"+b.BrokerPort).SetClientID(b.ID)
   b.Client = mqtt.NewClient(opts)
   // Connection to the MQTT Broker
   if token := b.Client.Connect(); token.Wait() && token.Error() != nil {
      log.Fatal(token.Error())
   }
+  log.Printf("Connected to the broker %s:%s",b.BrokerHost,b.BrokerPort)
+}
+
+func (b *MQTT) Subscribe(channel string) {
   // Subscribe to the global Topic
-  if token := b.Client.Subscribe(b.Topic, 0, b.MqttHandlerJSON(b.Topic)); token.Wait() && token.Error() != nil {
-     log.Fatal(token.Error())
-  }
-  // Subscribe to the global Topic
-  if token := b.Client.Subscribe(b.ID+"-incoming", 0, b.MqttHandlerJSON(b.ID+"-incoming")); token.Wait() && token.Error() != nil {
+  if token := b.Client.Subscribe(channel, 0, b.MqttHandlerJSON(channel)); token.Wait() && token.Error() != nil {
      log.Fatal(token.Error())
   }
 }
 
-
 // Action made when the device receive a message from the specified Topic
 func (b *MQTT) MqttHandlerJSON(channel string) func(client mqtt.Client, message mqtt.Message) {
   var msgRcvd mqtt.MessageHandler = func(client mqtt.Client, message mqtt.Message) {
-    log.Println("Receive Message")
+    //log.Println(fmt.Sprintf("Receive Message on %s channel",channel))
     var msg Message
     // Parse the incoming message to a Message struct
     err := json.Unmarshal(message.Payload(), &msg)
     if err != nil {
-      log.Println("Bad Format message")
+      log.Printf("Bad Format message : %s",err)
     }
     // Action to do when a message is correctly parsed
     b.Action(msg,client,channel)

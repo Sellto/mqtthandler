@@ -6,6 +6,7 @@ launchers:
 broker:
   host: localhost
   port: 1883
-  topic: fpgacommand
+  topic: broadcast
 sourcepath:
   "/Users/tse/data/mqtthandler/"
+token: "715c1ee2f406f1419a8b47c3"
